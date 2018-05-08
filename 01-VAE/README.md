@@ -23,6 +23,8 @@ tensorboard --logdir logdir
 python train-agents.py
 ```
 
+![training-agents](https://github.com/dariocazzani/World-Models-TensorFlow/blob/master/images/training-agents.png)
+
 In another terminal run the following command to visualize the training
 ```
 python display_rewards.py
