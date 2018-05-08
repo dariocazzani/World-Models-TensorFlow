@@ -1,0 +1,6 @@
+data
+__pycache__/
+logdir/
+saved_models
+*npy
+gym
