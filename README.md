@@ -15,11 +15,12 @@ pip install -r requirements.txt
 
 ### 1. Stateless Agents
 
-Train the agents to drive around using only the information from the current frame
+Train the agents to drive around using only the information from the current frame.
 
 ```
-cd 
+cd 01-VAE/
 ```
+And follow the instructions there
 
 ### 2. Train the RNN
 
