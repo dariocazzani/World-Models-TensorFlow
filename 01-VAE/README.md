@@ -16,6 +16,8 @@ In another terminal run the following command to visualize the training in Tenso
 tensorboard --logdir logdir
 ```
 
+![tensorboard-VAE](https://github.com/dariocazzani/World-Models-TensorFlow/blob/master/images/tensorboard-VAE.png)
+
 ### 3. Train the agents
 ```
 python train-agents.py
