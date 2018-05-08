@@ -15,13 +15,13 @@ def display_rewards(rewards):
 
     ax.scatter(x, rewards.flatten(), s=8)
     ax.plot(mean, c='g', label='Avarages')
-    ax.plot(mn, c='r', label='Minumums')
+    ax.plot(mn, c='r', label='Minimum')
     ax.plot(mx, c='y', label='Maximums')
 
     plt.legend(loc='upper left')
 
     plt.xlabel('Generations', fontsize=10)
-    plt.xticks(np.arange(min(x), max(x)+1, 1.0))
+    plt.xticks(np.arange(min(x), max(x)+1, 10))
 
     plt.ylabel('Reward', fontsize=10)
 
