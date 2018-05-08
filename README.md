@@ -1,5 +1,8 @@
-## An Implementation of [World Models-](https://worldmodels.github.io/) in TensorFlow
+## An Implementation of [World Models](https://worldmodels.github.io/) in TensorFlow
 
+[![dep2](https://img.shields.io/badge/TensorFlow-1.3%2B-orange.svg)](https://www.tensorflow.org/)
+![dep1](https://img.shields.io/badge/Status-Work--in--Progress-brightgreen.svg)
+[![dep2](https://img.shields.io/badge/OpenAI-Gym-blue.svg)](https://gym.openai.com/)
 ### Create a Python Virtual Environment
 
 ```
