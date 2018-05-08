@@ -29,3 +29,5 @@ In another terminal run the following command to visualize the training
 ```
 python display_rewards.py
 ```
+
+![rewards](https://github.com/dariocazzani/World-Models-TensorFlow/blob/master/images/rewards.png)
