@@ -14,7 +14,7 @@ def display_rewards(rewards):
     ax = fig.add_subplot(111)
 
     ax.scatter(x, rewards.flatten(), s=8)
-    ax.plot(mean, c='g', label='Avarages')
+    ax.plot(mean, c='g', label='Averages')
     ax.plot(mn, c='r', label='Minimum')
     ax.plot(mx, c='y', label='Maximums')
 

@@ -11,7 +11,7 @@ from gym.envs.box2d import CarRacing
 import cma
 import multiprocessing as mp
 
-from vae import load_vae
+from train_VAE import load_vae
 
 _EMBEDDING_SIZE = 32
 _NUM_PREDICTIONS = 2
