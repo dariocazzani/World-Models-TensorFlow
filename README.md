@@ -24,7 +24,7 @@ pip install -r requirements.txt
 Train the agents to drive around using only the information from the current frame.
 
 ```
-cd 01-VAE/
+cd stateless_agent/
 ```
 And follow the instructions there
 
