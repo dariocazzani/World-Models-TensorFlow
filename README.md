@@ -6,6 +6,9 @@
 
 ![car-driving](https://github.com/dariocazzani/World-Models-TensorFlow/blob/master/images/car-drive-dream.gif)
 
+### Medium Article
+Please read more about this implementation on my article [World Models in TensorFlow — Episode 1](https://medium.com/@dariocazzani/world-models-in-tensorflow-episode-1-2b3c217ebc8f)
+
 ### Create a Python Virtual Environment
 
 ```
