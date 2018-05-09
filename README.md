@@ -31,3 +31,6 @@ And follow the instructions there
 ### 2. Train the RNN
 
 Work in Progress
+
+### 3. ....
+
