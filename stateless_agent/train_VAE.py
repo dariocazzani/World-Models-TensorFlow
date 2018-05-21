@@ -55,7 +55,7 @@ class Network(object):
 		return vae_loss
 
 def data_iterator(batch_size):
-	data_files = glob.glob('../data/obs_data_VAE_*')
+	data_files = glob.glob('../data/obs_data_*')
 	while True:
 		data = np.load(random.sample(data_files, 1)[0])
 		np.random.shuffle(data)
@@ -109,7 +109,7 @@ def train_vae():
 	except Exception as e:
 		print("Exception: {}".format(e))
 
-def load_vae():
+def load_vae(model_path=model_path):
 
 	graph = tf.Graph()
 	with graph.as_default():

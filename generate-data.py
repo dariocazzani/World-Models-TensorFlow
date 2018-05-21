@@ -34,7 +34,7 @@ def simulate_batch(batch_num):
     env = CarRacing()
 
     obs_data = []
-    action_data = []
+    act_data = []
     action = env.action_space.sample()
     for i_episode in range(_BATCH_SIZE):
         observation = env.reset()
@@ -55,10 +55,12 @@ def simulate_batch(batch_num):
             observation = normalize_observation(observation)
 
             obs_data.append(observation)
+            act_data.append(action)
 
     print("Saving dataset for batch {}".format(batch_num))
-    np.save('../data/obs_data_VAE_{}'.format(batch_num), obs_data)
-    
+    np.save('data/obs_data_{}'.format(batch_num), obs_data)
+    np.save('data/act_data_{}'.format(batch_num), act_data)
+
     env.close()
 
 def main():
