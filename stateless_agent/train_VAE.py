@@ -1,10 +1,24 @@
 import tensorflow as tf
 import numpy as np
 import glob, random, os
+from collections import deque
+
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 model_path = "saved_models/"
 model_name = model_path + 'model'
+
+class MovingAvg(object):
+    def __init__(self, window):
+        self.window = window
+        self.memory = deque(maxlen=window)
+
+    def avg(self, last_element):
+        if len(self.memory) == 0:
+            for _ in range(self.window):
+                self.memory.append(last_element)
+        self.memory.append(last_element)
+        return np.mean(self.memory)
 
 class Network(object):
 	# Create model
@@ -86,19 +100,22 @@ def train_vae():
 		print("Could not restore saved model")
 
 	try:
+		ma = MovingAvg(20)
 		while True:
 			images = next(training_data)
 			_, loss_value, summary = sess.run([train_op, network.loss, network.merged],
 								feed_dict={network.image: images})
+
+			avg_loss = ma.avg(loss_value)
 			writer.add_summary(summary, step)
 
 			if np.isnan(loss_value):
 				raise ValueError('Loss value is NaN')
 			if step % 10 == 0 and step > 0:
-				print ('step {}: training loss {:.6f}'.format(step, loss_value))
+				print ('step {}: training loss {:.6f}'.format(step, avg_loss))
 				save_path = saver.save(sess, model_name, global_step=global_step)
-			if loss_value <= 35:
-				print ('step {}: training loss {:.6f}'.format(step, loss_value))
+			if avg_loss <= 35:
+				print ('step {}: training loss {:.6f}'.format(step, avg_loss))
 				save_path = saver.save(sess, model_name, global_step=global_step)
 				break
 			step+=1
