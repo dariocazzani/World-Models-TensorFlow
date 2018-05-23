@@ -2,10 +2,13 @@ import numpy as np
 import glob
 import argparse
 
-from model import Model
+from network import Network
 import tensorflow as tf
 
-_SEQ_MAX_LENGTH = 300
+model_path = "saved_models/"
+model_name = model_path + 'model'
+
+_SEQ_MAX_LENGTH = 140
 
 def data_iterator(batch_size):
 	obs_data_files = glob.glob('../data/obs_encoded_*')
@@ -33,54 +36,93 @@ def data_iterator(batch_size):
 			target_batch.append(target)
 		yield np.array(data_batch), np.array(target_batch)
 
-def main():
+def parse_args():
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--rnn_size', type=int, default=256,
 						help='size of RNN hidden state')
-	parser.add_argument('--num_layers', type=int, default=2,
+	parser.add_argument('--num_layers', type=int, default=1,
 						help='number of layers in the RNN')
-	parser.add_argument('--model', type=str, default='lstm',
-						help='rnn, gru, or lstm')
+	# parser.add_argument('--model', type=str, default='lstm',
+	# 					help='rnn, gru, or lstm')
 	parser.add_argument('--batch_size', type=int, default=64,
 						help='minibatch size')
 	parser.add_argument('--seq_length', type=int, default=_SEQ_MAX_LENGTH,
 						help='RNN sequence length')
-	parser.add_argument('--num_epochs', type=int, default=30,
-						help='number of epochs')
 	parser.add_argument('--keep_prob', type=float, default=0.8,
 						help='dropout keep probability')
 	parser.add_argument('--grad_clip', type=float, default=10.,
 						help='clip gradients at this value')
-	parser.add_argument('--learning_rate', type=float, default=0.005,
+	parser.add_argument('--learning_rate', type=float, default=1E-3,
 						help='learning rate')
-	parser.add_argument('--decay_rate', type=float, default=0.95,
-						help='decay rate for rmsprop')
 	args = parser.parse_args()
+	return args
+
+def train_M():
+	args = parse_args()
 
 	data_gen = data_iterator(args.batch_size)
 	data, targets = next(data_gen)
-	print(data.shape)
-	print(targets.shape)
 
-	model = Model(args)
+	sess = tf.InteractiveSession()
+	global_step = tf.Variable(0, name='global_step', trainable=False)
+	writer = tf.summary.FileWriter('logdir')
+	network = Network(args)
+	tf.global_variables_initializer().run()
 
-	with tf.Session() as sess:
+	saver = tf.train.Saver(max_to_keep=1)
+	step = global_step.eval()
+
+	try:
+		saver.restore(sess, tf.train.latest_checkpoint(model_path))
+		print("Model restored from: {}".format(model_path))
+	except:
+		print("Could not restore saved model")
+
+	try:
+		while True:
+			state = sess.run(network.state_in)
+			data, targets = next(data_gen)
+			feed_dict = {
+				network.input_data: data,
+				network.target_data: targets,
+				network.state_in: state}
+			train_loss, state, _ = sess.run(
+				[network.cost, network.state_out, network.train_op], feed_dict=feed_dict)
+
+			if step % 10 == 0 and step > 0:
+				print("step {}:, train_loss = {:.3f}".format(step, train_loss))
+				save_path = saver.save(sess, model_name, global_step=global_step)
+
+			step+=1
+
+	except (KeyboardInterrupt, SystemExit):
+		print("Manual Interrupt")
+
+	except Exception as e:
+		print("Exception: {}".format(e))
+
+def load_M(model_path=model_path):
+	args = parse_args()
+
+	graph_rnn = tf.Graph()
+	with graph_rnn.as_default():
+
+		network = Network(args, infer=True)
+
+		config = tf.ConfigProto()
+		config.gpu_options.allow_growth = True
+		sess = tf.InteractiveSession(config=config)
 		tf.global_variables_initializer().run()
-		for e in range(args.num_epochs):
-			sess.run(tf.assign(model.lr,
-			args.learning_rate * (args.decay_rate ** e)))
-			state = model.state_in.eval()
-			for b in range(int(1000/args.batch_size)):
-				ith_train_step = e * int(1000/args.batch_size) + b
-				data, targets = next(data_gen)
-				feed = {
-					model.input_data: data,
-					model.target_data: targets,
-					model.state_in: state}
-				train_loss, state, _ = sess.run(
-					[model.cost, model.state_out, model.train_op], feed)
+		# sess = tf.Session(config=config, graph=graph_rnn)
 
-				print("(epoch {}), train_loss = {:.3f}".format(e, train_loss))
+		saver = tf.train.Saver()
+
+		try:
+			saver.restore(sess, tf.train.latest_checkpoint(model_path))
+		except:
+			raise ImportError("Could not restore saved model")
+
+		return sess, network
 
 if __name__ == '__main__':
-	main()
+	train_M()
